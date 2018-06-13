@@ -14,6 +14,13 @@ type F func(http.ResponseWriter, *http.Request) (int, error)
 // F.ServeHTTP.
 var ServeHTTP = func(w http.ResponseWriter, r *http.Request, status int,
 	err error) {
+	if status >= 400 {
+		if err != nil {
+			http.Error(w, err.Error(), status)
+		} else {
+			http.Error(w, "", status)
+		}
+	}
 }
 
 // ServeHTTP calls f(w, r) and passes the result to h.ServeHTTP.
