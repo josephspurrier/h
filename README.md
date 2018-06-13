@@ -99,9 +99,10 @@ Read through the comments on each function to see how it works.
 You can build and run this application and then open your browser to any of the
 following pages:
 
-- http://localhost/
-- http://localhost/created
-- http://localhost/goodbye
+- http://localhost:8080/
+- http://localhost:8080/created
+- http://localhost:8080/badinput
+- http://localhost:8080/bigerror
 
 ```go
 package main
@@ -109,6 +110,7 @@ package main
 import (
 	"errors"
 	"fmt"
+	"log"
 	"net/http"
 
 	"github.com/josephspurrier/h"
@@ -117,12 +119,13 @@ import (
 // Hello will output "hello" with a 200 HTTP status code for requests to "/".
 // For all other requests without a registered HTTP handler, it will show
 // "page not found" with a 404 HTTP status code.
-// Notice how the `return` is empty at the bottom of the function. Since the
-// return values are named, they will return their zero values when an empty
-// return is called. The default `h.ServeHTTP()` function also does not do
-// anything with a status code less than 400 (400 and above are errors) so if
-// you want it to be different than 200, you must use the `w.WriteHeader()` call
-// prior to writing to the ResponseWriter.
+// Notice how return is empty at the bottom of the function. Since the return
+// values are named, they will return their zero values when an empty return is
+// called.
+// The default `h.ServeHTTP()` function also does not do anything with a status
+// code less than 400 (400 and above are errors) so if you want it to be
+// different than 200, you must use the `w.WriteHeader()` call prior to writing
+// to the ResponseWriter.
 func Hello(w http.ResponseWriter, r *http.Request) (status int, err error) {
 	// Set the 404 error handler.
 	if r.URL.Path != "/" {
@@ -140,20 +143,49 @@ func Created(w http.ResponseWriter, r *http.Request) (status int, err error) {
 	return
 }
 
-// Goodbye will output "goodbye" with a 400 HTTP status code.
-// Since you are returning the `http.StatusBadRequest` and the error, the
+// BadInput will output "bad input" with a 400 HTTP status code.
+// Since you are returning `http.StatusBadRequest` and an error, the
 // `h.ServeHTTP()` function will determine how to handle the error. This allows
 // you to specify how errors are handled in your application from one location.
-func Goodbye(w http.ResponseWriter, r *http.Request) (status int, err error) {
-	return http.StatusBadRequest, errors.New("goodbye")
+func BadInput(w http.ResponseWriter, r *http.Request) (status int, err error) {
+	return http.StatusBadRequest, errors.New("bad input")
+}
+
+// BigError will output "internal error" with a 500 HTTP status code.
+// Since you are returning `http.StatusInternalServerError` and an error, the
+// `h.ServeHTTP()` function will log the error to the console.
+func BigError(w http.ResponseWriter, r *http.Request) (status int, err error) {
+	return http.StatusInternalServerError, errors.New("internal error")
 }
 
 func main() {
+	h.ServeHTTP = ServeHTTP
 	http.Handle("/", h.F(Hello))
 	http.Handle("/created", h.F(Created))
-	http.Handle("/goodbye", h.F(Goodbye))
+	http.Handle("/badinput", h.F(BadInput))
+	http.Handle("/bigerror", h.F(BigError))
 	http.ListenAndServe(":8080", nil)
 }
+
+// ServeHTTP handles the returns from the handlers.
+func ServeHTTP(w http.ResponseWriter, r *http.Request, status int, err error) {
+	// Handle only HTTP errors.
+	if status >= 400 {
+		if err != nil {
+			http.Error(w, err.Error(), status)
+		} else {
+			http.Error(w, "", status)
+		}
+	}
+
+	// Output only 500 errors.
+	if status >= 500 {
+		if err != nil {
+			log.Println(err)
+		}
+	}
+}
+
 ```
 
 ## In All Seriousness
