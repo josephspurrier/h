@@ -4,6 +4,7 @@
 [![GoDoc](https://godoc.org/github.com/josephspurrier/h?status.svg)](https://godoc.org/github.com/josephspurrier/h)
 [![Build Status](https://travis-ci.org/josephspurrier/h.svg)](https://travis-ci.org/josephspurrier/h)
 [![Coverage Status](https://coveralls.io/repos/github/josephspurrier/h/badge.svg?branch=master)](https://coveralls.io/github/josephspurrier/h?branch=master)
+[![License: Unlicense](https://img.shields.io/badge/license-Unlicense-blue.svg)](http://unlicense.org/)
 
 ## Advanced Lightweight Go HTTP Handler Adapter
 
