@@ -1,7 +1,9 @@
 # h
 
 [![Go Report Card](https://goreportcard.com/badge/github.com/josephspurrier/h)](https://goreportcard.com/report/github.com/josephspurrier/h)
+[![Build Status](https://travis-ci.org/josephspurrier/h.svg)](https://travis-ci.org/josephspurrier/h)
 [![GoDoc](https://godoc.org/github.com/josephspurrier/h?status.svg)](https://godoc.org/github.com/josephspurrier/h)
+[![Coverage Status](https://coveralls.io/repos/github/josephspurrier/h/badge.svg?branch=master)](https://coveralls.io/github/josephspurrier/h?branch=master)
 
 ## Advanced Lightweight Go HTTP Handler Adapter
 
