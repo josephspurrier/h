@@ -7,16 +7,15 @@
 
 ## Advanced Lightweight Go HTTP Handler Adapter
 
-Simple to use.
+**h** provides an adapter which allows HTTP handler functions to
+return an int HTTP status code and an error. This technique allows you to
+centralize the handling of errors via a customizable `ServeHTTP()` function.
 
 Inspired by [mholt](https://github.com/mholt) and his project,
 [caddy](https://github.com/mholt/caddy/wiki/Writing-a-Plugin:-HTTP-Middleware#writing-a-handler).
 
-**h** provides a simple adapter to allow HTTP handler functions to return an int
-HTTP status code and an error. This allows you to centralize the handling of
-errors in one function.
-
-[Andrew Gerrand](https://github.com/adg) uses a variation of this adapter on the
+[Andrew Gerrand](https://github.com/adg) uses a custom HTTP handler similar to
+this one (return just `error` instead of `int, error`) on the
 [The Go Blog](https://blog.golang.org/error-handling-and-go).
 
 ## Usage
