@@ -15,7 +15,7 @@ Inspired by [mholt](https://github.com/mholt) and his project,
 [caddy](https://github.com/mholt/caddy/wiki/Writing-a-Plugin:-HTTP-Middleware#writing-a-handler).
 
 [Andrew Gerrand](https://github.com/adg) uses a custom HTTP handler similar to
-this one (return just `error` instead of `int, error`) on the
+this one (his handlers return `error` instead of `int, error`) on the
 [The Go Blog](https://blog.golang.org/error-handling-and-go).
 
 ## Usage
