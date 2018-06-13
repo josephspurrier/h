@@ -70,7 +70,7 @@ func ServeHTTP(w http.ResponseWriter, r *http.Request, status int, err error) {
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(status)
 
-		r := new(response.OKResponse)
+		r := new(randompackage.ErrResponse)
 		r.Body.Status = http.StatusText(status)
 		if err != nil {
 			r.Body.Message = err.Error()
