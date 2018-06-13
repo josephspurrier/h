@@ -2,6 +2,7 @@ package h_test
 
 import (
 	"errors"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -66,4 +67,22 @@ func TestServeHTTPResponseErrorEmpty(t *testing.T) {
 	h.ServeHTTP(w, r, http.StatusInternalServerError, nil)
 	assert.Equal(t, http.StatusInternalServerError, w.Code)
 	assert.Equal(t, w.Body.String(), "\n")
+}
+
+func TestChangeServeHTTP(t *testing.T) {
+	mux := http.NewServeMux()
+	h.ServeHTTP = func(w http.ResponseWriter, r *http.Request, status int, err error) {
+		if status == 200 {
+			fmt.Fprint(w, "changed")
+		}
+	}
+	mux.Handle("/", h.F(func(w http.ResponseWriter, r *http.Request) (int, error) {
+		return http.StatusOK, nil
+	}))
+	r := httptest.NewRequest("GET", "/", nil)
+	w := httptest.NewRecorder()
+
+	mux.ServeHTTP(w, r)
+	assert.Equal(t, http.StatusOK, w.Code)
+	assert.Equal(t, w.Body.String(), "changed")
 }
