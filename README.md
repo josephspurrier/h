@@ -27,7 +27,18 @@ errors in one function.
 import "github.com/josephspurrier/h"
 ```
 
-2. Add `(status int, err error)` as the return for each of your HTTP handler
+2. Change each `http.HandleFunc()` to `http.Handle()` and wrap each HTTP handler
+with `h.F()`.
+
+```go
+// Before
+http.HandleFunc("/hello", Index)
+
+// After
+http.Handle("/hello", h.F(Index))
+```
+
+3. Add `(status int, err error)` as the return for each of your HTTP handler
 functions. Also, modify each function to now return the proper values.
 
 ```go
@@ -42,15 +53,43 @@ func Index(w http.ResponseWriter, r *http.Request) (status int, err error) {
 }
 ```
 
-3. Change each `http.HandleFunc()` to `http.Handle()` and wrap each HTTP handler
-with `h.F()`.
+4. Customize `h.ServeHTTP()` to fit your application needs.
 
 ```go
-// Before
-http.HandleFunc("/hello", Index)
+func main() {
+	h.ServeHTTP = ServeHTTP
+	http.Handle("/hello", h.F(Index))
+	// ...
+	http.ListenAndServe(":8080", nil)
+}
 
-// After
-http.Handle("/hello", h.F(Index))
+// ServeHTTP handles all the HTTP handlers.
+func ServeHTTP(w http.ResponseWriter, r *http.Request, status int, err error) {
+	// Handle only errors.
+	if status >= 400 {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(status)
+
+		r := new(response.OKResponse)
+		r.Body.Status = http.StatusText(status)
+		if err != nil {
+			r.Body.Message = err.Error()
+		}
+
+		err := json.NewEncoder(w).Encode(r.Body)
+		if err != nil {
+			w.Write([]byte(`{"status":"Internal Server Error","message":"problem encoding JSON"}`))
+			return
+		}
+	}
+
+	// Only output 500 errors.
+	if status >= 500 {
+		if err != nil {
+			log.Println(err)
+		}
+	}
+}
 ```
 
 ## Full Example
